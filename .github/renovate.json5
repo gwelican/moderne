@@ -35,7 +35,7 @@
     {
       customType: "regex",
       description: "Process Grafana dashboards",
-      fileMatch: ["main\\.ya?ml(\\.j2)?$"],
+      fileMatch: [".+\\.ya?ml"],
       matchStrings: [
         "depName=\"(?<depName>.*)\"\\n(?<indentation>\\s+)gnetId: (?<packageName>\\d+)\\n.+revision: (?<currentValue>\\d+)",
       ],

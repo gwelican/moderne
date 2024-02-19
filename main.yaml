@@ -1,8 +1,3 @@
-unifi-usw-insights: 
-  # renovate: depName="Unifi USW"
-  gnetId: 11312
-  datasource: Prometheus
-  revision: 7
-
-# renovate: datasource=github-releases depName=k3s-io/k3s
-k3s_release_version: v1.29.0+k3s1
+  
+# renovate: datasource=github-releases depName=siderolabs/talos
+TALOS_VERSION: v1.6.3
