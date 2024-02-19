@@ -1,0 +1,112 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":disableRateLimiting",
+    ":semanticCommits",
+    ":enablePreCommit",
+    ":automergeDigest",
+    ":automergeBranch",
+    "github>gwelican/kube-argo//.github/renovate/autoMerge.json5",
+    // "github>gwelican/kube-argo//.github/renovate/grafanaDashboard.json5",
+    // "github>gwelican/kube-argo//.github/renovate/commitMessage.json5",
+    "github>gwelican/kube-argo//.github/renovate/groups.json5",
+    "github>gwelican/kube-argo//.github/renovate/labels.json5",
+    "github>gwelican/kube-argo//.github/renovate/semanticCommits.json5"
+
+  ],
+
+  "helm-values": {
+    "fileMatch": [
+      "talos-charts/.+\\.ya?ml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "talos-charts/.+\\.ya?ml$"
+    ]
+  },
+  // bot config
+  // "platform": "github",
+  // "username": "gwelican-bot[bot]",
+  // "repositories": ["gwelican/kube-argo"],
+  // "onboarding": false,
+  // "requireConfig": false,
+
+  "gitAuthor": "gwelican-bot <38752926+gwelican-bot[bot]@users.noreply.github.com>",
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prIgnoreNotification"],
+
+  "rebaseWhen": "conflicted",
+  "commitBodyTable": true,
+
+  "includePaths": [ "talos-charts/**" ],
+  "ignoreTests": true,
+  customDatasources: {
+    "grafana-dashboards": {
+      defaultRegistryUrlTemplate: "https://grafana.com/api/dashboards/{{packageName}}",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $string(revision)}]}'],
+    },
+  },
+  "customManagers": [
+    // {
+    //   "description": "Process CRD dependencies",
+    //   "fileMatch": ["cluster/crds/.+\\.ya?ml$"],
+    //   "matchStrings": [
+    //     // GitRepository where 'Git release/tag' matches 'Helm' version
+    //     "registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?(?<currentValue>[^-\\s]*)\n",
+    //     // Kustomization where 'GitHub release artifact URL' matches 'Docker image' version
+    //     "datasource=(?<datasource>\\S+) image=(?<depName>\\S+)\n.*?-\\s(.*?)\/(?<currentValue>[^/]+)\/[^/]+\n"
+    //   ],
+    //   "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}helm{{/if}}"
+    // },
+    {
+      customType: "regex",
+      description: "Process Grafana dashboards",
+      fileMatch: ["talos-charts/.+\\.ya?ml(\\.j2)?$"],
+      matchStrings: [
+        "depName=\"(?<depName>.*)\"\\n(?<indentation>\\s+)gnetId: (?<packageName>\\d+)\\n.+revision: (?<currentValue>\\d+)",
+      ],
+      autoReplaceStringTemplate: "depName=\"{{{depName}}}\"\n{{{indentation}}}gnetId: {{{packageName}}}\n{{{indentation}}}revision: {{{newValue}}}",
+      datasourceTemplate: "custom.grafana-dashboards",
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+    },
+    // {
+    //   "customType": "regex",
+    //   "description": ["Process custom dependencies"],
+    //   "fileMatch": [
+    //     "infra/+\\.ya?ml"
+    //   ],
+    //   "matchStrings": [
+    //     // # renovate: datasource=github-releases depName=k3s-io/k3s
+    //     // k3s_release_version: v1.29.0+k3s1
+    //     "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*=?))?( versionTemplate=(?<versionTemplate>.*=?))?\\n.*: ?(\"?(?<currentValue>[^\"\\n]+=?)\"?)",
+
+    //     "(?m:# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+?: \"?(?<currentValue>\\S+?)\"?$)",
+    //     // # renovate: datasource=github-releases depName=rancher/system-upgrade-controller
+    //     // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
+    //     "(?m:# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+?\/(?<currentValue>(v|\\d)[^\/]+)\\S+$)"
+    //   ],
+    //   "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
+    // },
+    // {
+    //   "description": "Process raw GitHub URLs",
+    //   "fileMatch": ["infra/.+\\.ya?ml$"],
+    //   "matchStrings": [
+    //     "https:\\/\\/raw.githubusercontent.com\\/(?<depName>[\\w\\d\\-_]+\\/[\\w\\d\\-_]+)\\/(?<currentValue>[\\w\\d\\.\\-_]+)\\/.*"
+    //   ],
+    //   "datasourceTemplate": "github-releases",
+    //   "versioningTemplate": "semver"
+    // }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/onedr0p/qbittorrent"],
+      "versioning": "loose"
+    },
+
+  ]
+}
