@@ -35,7 +35,7 @@
     {
       customType: "regex",
       description: "Process Grafana dashboards",
-      fileMatch: ["talos-charts/.+\\.ya?ml(\\.j2)?$"],
+      fileMatch: [".+\\.ya?ml(\\.j2)?$"],
       matchStrings: [
         "depName=\"(?<depName>.*)\"\\n(?<indentation>\\s+)gnetId: (?<packageName>\\d+)\\n.+revision: (?<currentValue>\\d+)",
       ],

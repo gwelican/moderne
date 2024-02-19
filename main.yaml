@@ -1,0 +1,5 @@
+unifi-usw-insights: 
+  # renovate: depName="Unifi USW"
+  gnetId: 11312
+  datasource: Prometheus
+  revision: 7
