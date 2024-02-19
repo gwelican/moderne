@@ -32,16 +32,35 @@
     },
   },
   "customManagers": [
+    // {
+    //   customType: "regex",
+    //   description: "Process Grafana dashboards",
+    //   fileMatch: ["main\\.ya?ml(\\.j2)?$"],
+    //   matchStrings: [
+    //     "depName=\"(?<depName>.*)\"\\n(?<indentation>\\s+)gnetId: (?<packageName>\\d+)\\n.+revision: (?<currentValue>\\d+)",
+    //   ],
+    //   autoReplaceStringTemplate: "depName=\"{{{depName}}}\"\n{{{indentation}}}gnetId: {{{packageName}}}\n{{{indentation}}}revision: {{{newValue}}}",
+    //   datasourceTemplate: "custom.grafana-dashboards",
+    //   versioningTemplate: "regex:^(?<major>\\d+)$",
+    // },
     {
-      customType: "regex",
-      description: "Process Grafana dashboards",
-      fileMatch: [".+\\.ya?ml(\\.j2)?$"],
-      matchStrings: [
-        "depName=\"(?<depName>.*)\"\\n(?<indentation>\\s+)gnetId: (?<packageName>\\d+)\\n.+revision: (?<currentValue>\\d+)",
+      "customType": "regex",
+      "description": ["Process custom dependencies"],
+      "fileMatch": [
+        "main\\.ya?ml"
       ],
-      autoReplaceStringTemplate: "depName=\"{{{depName}}}\"\n{{{indentation}}}gnetId: {{{packageName}}}\n{{{indentation}}}revision: {{{newValue}}}",
-      datasourceTemplate: "custom.grafana-dashboards",
-      versioningTemplate: "regex:^(?<major>\\d+)$",
+      "matchStrings": [
+        // # renovate: datasource=github-releases depName=k3s-io/k3s
+        // k3s_release_version: v1.29.0+k3s1
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)",
+
+        "(?m:# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+?: \"?(?<currentValue>\\S+?)\"?$)",
+        // # renovate: datasource=github-releases depName=rancher/system-upgrade-controller
+        // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
+        "(?m:# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+?\/(?<currentValue>(v|\\d)[^\/]+)\\S+$)"
+      ],
+      "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
     },
+
   ]
 }
